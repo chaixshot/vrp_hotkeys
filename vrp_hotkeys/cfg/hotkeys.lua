@@ -37,6 +37,7 @@ cfg.hotkeys = {
       --if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Uncomment to block use in vehicle
 	  handsup = not handsup
 	  vRP.stopAnim({true})
+	  SetEnableHandcuffs(player, pointing)
 	  SetPedStealthMovement(player,false,"") 
 	  --end -- Uncomment to block use in vehicle
 	  ]]
@@ -58,13 +59,14 @@ cfg.hotkeys = {
 	  --end -- Uncomment to block use in vehicle
 	end,
 	released = function()
-	  -- Remove the []s to use on hold
+	  --[[ Remove the []s to use on hold
       --if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Uncomment to block use in vehicle
 	  pointing = not pointing
 	  vRP.stopAnim({true})
+	  SetEnableHandcuffs(player, pointing)
 	  SetPedStealthMovement(player,false,"") 
 	  --end -- Uncomment to block use in vehicle
-	  
+	  ]]
 	end,
   },
   [36] = {
