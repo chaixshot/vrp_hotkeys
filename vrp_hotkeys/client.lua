@@ -53,7 +53,7 @@ Citizen.CreateThread(function()
   end
 end)
 
--- THIS IS FOR HANDSUP
+-- THIS IS FOR POINTING
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(0)
