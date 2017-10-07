@@ -10,7 +10,6 @@ vRP = Proxy.getInterface("vRP")
 player = GetPlayerPed(-1)
 handsup = false
 crouched = false
-pointing = false
 
 -- YOU ARE ON A CLIENT SCRIPT ( Just reminding you ;) )
 -- Keys IDs can be found at https://wiki.fivem.net/wiki/Controls
@@ -18,62 +17,29 @@ pointing = false
 -- Hotkeys Configuration: cfg.hotkeys = {[Key] = {group = 1, pressed = function() end, released = function() end},}
 cfg.hotkeys = {
   [73] = {
-    -- X Toggle HandsUp
+    -- X toggle HandsUp
     group = 1, 
 	pressed = function() 
-      --if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Uncomment to block use in vehicle
-	  handsup = not handsup
-	  SetEnableHandcuffs(player, handsup)
-	  if handsup then
-	    vRP.playAnim({true,{{"random@mugging3", "handsup_standing_base", 1}},true})
-	  else
-	    vRP.stopAnim({true})
-		SetPedStealthMovement(player,false,"") 
-	  end
-	  --end -- Uncomment to block use in vehicle
+      if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Comment to allow use in vehicle
+	    handsup = not handsup
+	    SetEnableHandcuffs(player, handsup)
+	    if handsup then
+	      vRP.playAnim({true,{{"random@mugging3", "handsup_standing_base", 1}},true})
+	    else
+	      vRP.stopAnim({true})
+		  SetPedStealthMovement(player,false,"") 
+	    end
+	  end -- Comment to allow use in vehicle
 	end,
 	released = function()
-	  --[[ Remove the []s to use on hold
-      --if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Uncomment to block use in vehicle
-	  handsup = not handsup
-	  vRP.stopAnim({true})
-	  SetEnableHandcuffs(player, pointing)
-	  SetPedStealthMovement(player,false,"") 
-	  --end -- Uncomment to block use in vehicle
-	  ]]
-	end,
-  },
-  [29] = {
-    -- Hold B to Point
-    group = 1, 
-	pressed = function() 
-      --if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Uncomment to block use in vehicle
-	  pointing = not pointing
-	  SetEnableHandcuffs(player, pointing)
-	  if pointing then
-	    vRP.playAnim({true,{{"oddjobs@hunter", "point_fwd", 1}},true})
-	  else
-	    vRP.stopAnim({true})
-		SetPedStealthMovement(player,false,"") 
-	  end
-	  --end -- Uncomment to block use in vehicle
-	end,
-	released = function()
-	  --[[ Remove the []s to use on hold
-      --if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then -- Uncomment to block use in vehicle
-	  pointing = not pointing
-	  vRP.stopAnim({true})
-	  SetEnableHandcuffs(player, pointing)
-	  SetPedStealthMovement(player,false,"") 
-	  --end -- Uncomment to block use in vehicle
-	  ]]
+	  -- Do nothing on release because it's toggle.
 	end,
   },
   [36] = {
-    --CTRL for Crouch
+    -- CTRL toggle Crouch
     group = 0, 
 	pressed = function() 
-      if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then 
+      if not IsPauseMenuActive() and not IsPedInAnyVehicle(player, true) then  -- Comment to allow use in vehicle
         RequestAnimSet("move_ped_crouched")
 		while not HasAnimSetLoaded("move_ped_crouched") do 
           Citizen.Wait(100)
@@ -84,7 +50,17 @@ cfg.hotkeys = {
         else
           SetPedMovementClipset(player, "move_ped_crouched", 0.25)
         end 
-	  end
+	  end -- Comment to allow use in vehicle
+	end,
+	released = function()
+	  -- Do nothing on release because it's toggle.
+	end,
+  },
+  [213] = {
+    -- HOME toggle User List
+    group = 0, 
+	pressed = function() 
+	  HKserver.openUserList({})
 	end,
 	released = function()
 	  -- Do nothing on release because it's toggle.
