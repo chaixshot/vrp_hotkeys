@@ -10,6 +10,7 @@ vRP = Proxy.getInterface("vRP")
 handsup = false
 crouched = false
 pointing = false
+engine = true
 
 -- YOU ARE ON A CLIENT SCRIPT ( Just reminding you ;) )
 -- Keys IDs can be found at https://wiki.fivem.net/wiki/Controls
@@ -74,7 +75,7 @@ cfg.hotkeys = {
       if not IsPauseMenuActive() and not IsPedInAnyVehicle(GetPlayerPed(-1), true) then  -- Comment to allow use in vehicle
         RequestAnimSet("move_ped_crouched")
 		while not HasAnimSetLoaded("move_ped_crouched") do 
-          Citizen.Wait(100)
+          Citizen.Wait(0)
         end 
         crouched = not crouched 
 		if crouched then 
@@ -93,6 +94,18 @@ cfg.hotkeys = {
     group = 0, 
 	pressed = function() 
 	  HKserver.openUserList({})
+	end,
+	released = function()
+	  -- Do nothing on release because it's toggle.
+	end,
+  },
+  [311] = {
+    -- K toggle Vehicle Engine
+    group = 1, 
+	pressed = function() 
+      if not IsPauseMenuActive() and IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+		engine = not engine
+	  end
 	end,
 	released = function()
 	  -- Do nothing on release because it's toggle.

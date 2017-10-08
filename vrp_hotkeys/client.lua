@@ -91,4 +91,22 @@ Citizen.CreateThread(function()
   end
 end)
 
+-- THIS IS FOR ENGINE-CONTROL
+Citizen.CreateThread(function()
+  while true do
+	Citizen.Wait(0)
+	if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+	  local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+	  local damage = GetVehicleBodyHealth(vehicle)
+	  SetVehicleEngineOn(vehicle, engine, false, false)
+	  if damage <= 0 then
+		SetVehicleUndriveable(vehicle, true)
+		vRP.notify({"~r~Vehicle is too damaged."})
+	  end
+	else
+	  engine = true
+	end
+  end
+end)
+
 -- OTHER FUNCTIONS
