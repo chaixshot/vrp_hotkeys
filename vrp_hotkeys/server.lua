@@ -13,6 +13,56 @@ function vRPhk.test(msg)
   return 42
 end
 
+local vehStorage = {}
+function vRPhk.canUserLockVehicle(plate, vehicleId, isPlayerInside)
+	local player = source
+	playerIdentifier = GetPlayerIdentifiers(player)[1]
+	local randomMsg = {	"You have found the keys on the sun-shield",
+     				"You found the keys in the glove box.",
+    				"You found the keys on the passenger seat.",
+    				"You found the keys on the floor.",
+    				"The keys were already on the contact, you took them."}
+
+   	result = 0
+	for i=1, #(vehStorage) do
+		if vehStorage[i].plate == plate then
+			result = result + 1
+			if vehStorage[i].owner == playerIdentifier then
+				HKclient.lockVehicle(player,{vehStorage[i].lockStatus, vehStorage[i].id})
+				break
+			else
+				vRPclient.notifyPicture(player,{"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "You don't have the key of this vehicle."})
+				break
+			end
+		end
+	end
+
+	if result == 0 and isPlayerInside then
+
+		length = #(randomMsg)
+		randomNbr = math.random(1, tonumber(length))
+		vRPclient.notifyPicture(player,{"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", randomMsg[randomNbr]})
+		
+		table.insert(vehStorage, {plate=plate, owner=playerIdentifier, lockStatus=0, id=vehicleId})
+	end
+end
+
+function vRPhk.lockSystemUpdate(param, plate)
+    for i=1, #(vehStorage) do
+		if vehStorage[i].plate == plate then
+            vehStorage[i].lockStatus = param
+            break
+		end
+	end
+end
+
+function vRPhk.playSoundWithinDistanceOfEntityForEveryone(entity, maxDistance, soundFile, soundVolume)
+	local users = vRP.getUsers({})
+    for k,v in pairs(users) do
+	  HKclient.playSoundWithinDistanceOfEntity(v,{entity, maxDistance, soundFile, soundVolume})
+	end
+end
+
 local player_lists = {}
 function vRPhk.openUserList()
   local player = source
@@ -47,7 +97,7 @@ function vRPhk.openUserList()
                 padding: 8px; 
                 width: 650px; 
                 margin-top: 100px; 
-                background: rgba(50,50,50,0.75); 
+                background: rgba(50,50,50,0.0); 
                 color: white; 
                 font-weight: bold; 
                 font-size: 1.1em;

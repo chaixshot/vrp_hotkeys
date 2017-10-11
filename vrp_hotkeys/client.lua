@@ -110,3 +110,58 @@ Citizen.CreateThread(function()
 end)
 
 -- OTHER FUNCTIONS
+function vRPhk.lockVehicle(lockStatus, vehicle)
+	if lockStatus == 1 or lockStatus == 0 then -- locked or unlocked
+
+		if IsVehicleEngineOn(vehicle) and not isPlayerInside then
+			SetVehicleUndriveable(vehicle, true)
+		end
+
+		SetVehicleDoorsLocked(vehicle, 2) 
+		SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), true)
+		HKserver.lockSystemUpdate({2, plate})
+
+		-- ## Notifications
+			HKserver.playSoundWithinDistanceOfEntityForEveryone({vehicle, 10, "lock", 1.0})     		
+			Citizen.InvokeNative(0xAD738C3085FE7E11, vehicle, true, true) -- set as mission entity
+			vRP.notifyPicture({"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle locked."})
+		-- ## Notifications
+
+	elseif lockStatus == 2 then -- if it is locked
+
+		if not IsVehicleEngineOn(vehicle) then
+			Citizen.CreateThread(function()
+				while true do
+					Wait(0)
+					if isPlayerInside then
+						SetVehicleUndriveable(vehicle, false)
+						break
+					end
+				end
+			end)
+		end
+
+		SetVehicleDoorsLocked(vehicle, 1)
+		SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), false)
+		HKserver.lockSystemUpdate({1, plate})
+
+		-- ## Notifications
+			HKserver.playSoundWithinDistanceOfEntityForEveryone({vehicle, 10, "unlock", 1.0})
+			vRP.notifyPicture({"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle unlocked."})
+		-- ## Notifications
+
+	end
+end
+
+function vRPhk.playSoundWithinDistanceOfEntity(entity, maxDistance, soundFile, soundVolume)
+    local lCoords = GetEntityCoords(GetPlayerPed(-1))
+    local eCoords = GetEntityCoords(entity)
+    local distIs  = Vdist(lCoords.x, lCoords.y, lCoords.z, eCoords.x, eCoords.y, eCoords.z)
+    if(distIs <= maxDistance) then
+        SendNUIMessage({
+            transactionType     = 'playSound',
+            transactionFile     = soundFile,
+            transactionVolume   = soundVolume
+        })
+    end
+end
