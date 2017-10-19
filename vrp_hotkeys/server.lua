@@ -56,10 +56,10 @@ function vRPhk.lockSystemUpdate(param, plate)
 	end
 end
 
-function vRPhk.playSoundWithinDistanceOfEntityForEveryone(entity, maxDistance, soundFile, soundVolume)
+function vRPhk.playSoundWithinDistanceOfCoordsForEveryone(x, y, z, maxDistance, soundFile, soundVolume)
 	local users = vRP.getUsers({})
     for k,v in pairs(users) do
-	  HKclient.playSoundWithinDistanceOfEntity(v,{entity, maxDistance, soundFile, soundVolume})
+	  HKclient.playSoundWithinDistanceOfCoords(v,{x, y, z, maxDistance, soundFile, soundVolume})
 	end
 end
 

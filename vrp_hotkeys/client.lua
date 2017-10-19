@@ -122,7 +122,8 @@ function vRPhk.lockVehicle(lockStatus, vehicle)
 		HKserver.lockSystemUpdate({2, plate})
 
 		-- ## Notifications
-			HKserver.playSoundWithinDistanceOfEntityForEveryone({vehicle, 10, "lock", 1.0})     		
+		    local eCoords = GetEntityCoords(vehicle)
+			HKserver.playSoundWithinDistanceOfCoordsForEveryone({eCoords.x, eCoords.y, eCoords.z, 10, "lock", 1.0})   		
 			Citizen.InvokeNative(0xAD738C3085FE7E11, vehicle, true, true) -- set as mission entity
 			vRP.notifyPicture({"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle locked."})
 		-- ## Notifications
@@ -146,22 +147,24 @@ function vRPhk.lockVehicle(lockStatus, vehicle)
 		HKserver.lockSystemUpdate({1, plate})
 
 		-- ## Notifications
-			HKserver.playSoundWithinDistanceOfEntityForEveryone({vehicle, 10, "unlock", 1.0})
+		    local eCoords = GetEntityCoords(vehicle)
+			HKserver.playSoundWithinDistanceOfCoordsForEveryone({eCoords.x, eCoords.y, eCoords.z, 10, "unlock", 1.0})
 			vRP.notifyPicture({"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle unlocked."})
 		-- ## Notifications
 
 	end
 end
 
-function vRPhk.playSoundWithinDistanceOfEntity(entity, maxDistance, soundFile, soundVolume)
+function vRPhk.playSoundWithinDistanceOfCoords(x, y, z, maxDistance, soundFile, soundVolume)
     local lCoords = GetEntityCoords(GetPlayerPed(-1))
-    local eCoords = GetEntityCoords(entity)
-    local distIs  = Vdist(lCoords.x, lCoords.y, lCoords.z, eCoords.x, eCoords.y, eCoords.z)
+    local distIs  = Vdist(lCoords.x, lCoords.y, lCoords.z, x, y, z)
+	local Sreduc = 1.0 - (distIs/maxDistance)
+	local reducedVolume = Sreduc*soundVolume
     if(distIs <= maxDistance) then
         SendNUIMessage({
             transactionType     = 'playSound',
             transactionFile     = soundFile,
-            transactionVolume   = soundVolume
+            transactionVolume   = reducedVolume
         })
     end
 end
