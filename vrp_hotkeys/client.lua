@@ -95,7 +95,11 @@ end)
 Citizen.CreateThread(function()
   while true do
 	Citizen.Wait(0)
-	if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+    if DoesEntityExist(GetVehiclePedIsTryingToEnter(PlayerPedId())) then
+      local veh = GetVehiclePedIsTryingToEnter(PlayerPedId())
+	  engine = IsVehicleEngineOn(veh)
+	end
+	if IsPedInAnyVehicle(GetPlayerPed(-1), false) and not engine then
 	  local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
 	  local damage = GetVehicleBodyHealth(vehicle)
 	  SetVehicleEngineOn(vehicle, engine, false, false)
@@ -103,8 +107,6 @@ Citizen.CreateThread(function()
 		SetVehicleUndriveable(vehicle, true)
 		vRP.notify({"~r~Vehicle is too damaged."})
 	  end
-	else
-	  engine = true
 	end
   end
 end)
