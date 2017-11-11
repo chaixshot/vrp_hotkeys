@@ -14,12 +14,12 @@ function vRPhk.test(msg)
 end
 
 function vRPhk.toggleHandcuff()
+  local user_id = vRP.getUserId({source})
   if vRP.hasPermission({user_id,"hotkey.handcuff"}) then
     vRPclient.getNearestPlayer(source,{10},function(nplayer)
       local nuser_id = vRP.getUserId({nplayer})
       if nuser_id ~= nil then
         vRPclient.toggleHandcuff(nplayer,{})
-	    local user_id = vRP.getUserId({source})
         vRP.closeMenu({nplayer})
       else
         vRPclient.notify(source,{lang.common.no_player_near()})
