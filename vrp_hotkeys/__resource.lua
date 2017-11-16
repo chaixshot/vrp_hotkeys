@@ -3,10 +3,10 @@ description "vRP hotkeys"
 
 dependency "vrp"
 
+ui_page 'html/index.html'
+
 client_scripts{ 
-  "lib/Tunnel.lua",
-  "lib/Proxy.lua",
-  "cfg/hotkeys.lua",
+  "@vrp/lib/utils.lua",
   "client.lua"
 }
 
@@ -15,11 +15,9 @@ server_scripts{
   "server.lua"
 }
 
-ui_page('html/index.html')
-
-files({
-    'html/index.html',
+files{
+    'cfg/hotkeys.lua',
     'html/sounds/lock.ogg',
     'html/sounds/unlock.ogg',
     'html/sounds/demo.ogg'
-})
+}

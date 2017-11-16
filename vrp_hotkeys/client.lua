@@ -1,3 +1,20 @@
+-- TUNNEL AND PROXY
+vRPhk = {}
+local Tunnel = module("vrp", "lib/Tunnel")
+local Proxy = module("vrp", "lib/Proxy")
+local cfg = module("vrp_hotkeys", "cfg/hotkeys")
+HKserver = Tunnel.getInterface("vrp_hotkeys")
+Tunnel.bindInterface("vrp_hotkeys",vRPhk)
+vRPserver = Tunnel.getInterface("vRP")
+vRP = Proxy.getInterface("vRP")
+
+-- GLOBAL VARIABLES
+handsup = false
+crouched = false
+pointing = false
+engine = true
+called = 0
+
 -- MAIN THREAD
 Citizen.CreateThread(function()
 	while true do
@@ -105,7 +122,7 @@ Citizen.CreateThread(function()
 	  SetVehicleEngineOn(vehicle, engine, false, false)
 	  if damage <= 0 then
 		SetVehicleUndriveable(vehicle, true)
-		vRP.notify({"~r~Vehicle is too damaged."})
+		vRP.notify("~r~Vehicle is too damaged.")
 	  end
 	end
   end
@@ -117,17 +134,15 @@ Citizen.CreateThread(function() -- coma thread
     Citizen.Wait(1000)
     if vRP.isInComa({}) then
 	  if called == 0  then
-	    HKserver.canSkipComa({"coma.skipper","coma.caller"},function(skipper, caller) -- change them on cfg too if you do
+	    local skipper, caller = HKserver.canSkipComa() -- change them on cfg too if you do
 	      if skipper or caller then
-		    HKserver.docsOnline({},function(docs)
+		    local docs = HKserver.docsOnline()
 		      if docs == 0 and skipper then
-			    vRP.notify({"~r~There's nobody to revive you.\n~b~Press ~g~E~b~ to respawn."})
+			    vRP.notify("~r~There's nobody to revive you.\n~b~Press ~g~E~b~ to respawn.")
 			  elseif docs > 0 and caller then
-			    vRP.notify({"~g~There are doctors online.\n~b~Press ~g~E~b~ to call an ambulance."})
+			    vRP.notify("~g~There are doctors online.\n~b~Press ~g~E~b~ to call an ambulance.")
 			  end
-		    end)
           end
-	    end)
 	  else
 	    called = called - 1
 	  end
@@ -148,13 +163,13 @@ function vRPhk.lockVehicle(lockStatus, vehicle)
 
 		SetVehicleDoorsLocked(vehicle, 2) 
 		SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), true)
-		HKserver.lockSystemUpdate({2, plate})
+		HKserver.lockSystemUpdate(2, plate)
 
 		-- ## Notifications
 		    local eCoords = GetEntityCoords(vehicle)
-			HKserver.playSoundWithinDistanceOfCoordsForEveryone({eCoords.x, eCoords.y, eCoords.z, 10, "lock", 1.0})   		
+			HKserver.playSoundWithinDistanceOfCoordsForEveryone(eCoords.x, eCoords.y, eCoords.z, 10, "lock", 1.0)   		
 			Citizen.InvokeNative(0xAD738C3085FE7E11, vehicle, true, true) -- set as mission entity
-			vRP.notifyPicture({"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle locked."})
+			vRP.notifyPicture("CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle locked.")
 		-- ## Notifications
 
 	elseif lockStatus == 2 then -- if it is locked
@@ -173,12 +188,12 @@ function vRPhk.lockVehicle(lockStatus, vehicle)
 
 		SetVehicleDoorsLocked(vehicle, 1)
 		SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), false)
-		HKserver.lockSystemUpdate({1, plate})
+		HKserver.lockSystemUpdate(1, plate)
 
 		-- ## Notifications
 		    local eCoords = GetEntityCoords(vehicle)
-			HKserver.playSoundWithinDistanceOfCoordsForEveryone({eCoords.x, eCoords.y, eCoords.z, 10, "unlock", 1.0})
-			vRP.notifyPicture({"CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle unlocked."})
+			HKserver.playSoundWithinDistanceOfCoordsForEveryone(eCoords.x, eCoords.y, eCoords.z, 10, "unlock", 1.0)
+			vRP.notifyPicture("CHAR_LIFEINVADER", 3, "LockSystem", "vRP Hotkeys", "Vehicle unlocked.")
 		-- ## Notifications
 
 	end

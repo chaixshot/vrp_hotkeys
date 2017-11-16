@@ -1,21 +1,6 @@
--- TUNNEL AND PROXY
-cfg = {}
-vRPhk = {}
-Tunnel.bindInterface("vrp_hotkeys",vRPhk)
-vRPserver = Tunnel.getInterface("vRP","vrp_hotkeys")
-HKserver = Tunnel.getInterface("vrp_hotkeys","vrp_hotkeys")
-vRP = Proxy.getInterface("vRP")
-
--- GLOBAL VARIABLES
-handsup = false
-crouched = false
-pointing = false
-engine = true
-called = 0
-
 -- YOU ARE ON A CLIENT SCRIPT ( Just reminding you ;) )
 -- Keys IDs can be found at https://wiki.fivem.net/wiki/Controls
-
+cfg = {}
 -- Hotkeys Configuration: cfg.hotkeys = {[Key] = {group = 1, pressed = function() end, released = function() end},}
 cfg.hotkeys = {
   [170] = {
@@ -30,6 +15,33 @@ cfg.hotkeys = {
 	  -- Do nothing on release because it's toggle.
 	end,
   },
+  [46] = {
+    -- E call/skip emergency
+    group = 0, 
+	pressed = function() 
+	  if vRP.isInComa({}) then
+	    if called == 0 then 
+	      local skipper,caller = HKserver.canSkipComa() -- permission to skip when no Doc is online, or just call them when they are. Change them on client.lua too if you do
+		    if skipper or caller then
+		      local docs = HKserver.docsOnline()
+		        if docs == 0 and skipper then
+				  vRP.killComa()
+			    else
+				  called = 30
+				  local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
+				  HKserver.helpComa(x,y,z)
+				  Citizen.Wait(1000)
+			    end
+            end
+		else
+		  vRP.notify("~r~You already called the ambulance.")
+		end
+	  end
+	end,
+	released = function()
+	  -- Do nothing on release because it's toggle.
+	end,
+  },
   [73] = {
     -- X toggle HandsUp
     group = 1, 
@@ -38,9 +50,9 @@ cfg.hotkeys = {
 	    handsup = not handsup
 	    SetEnableHandcuffs(GetPlayerPed(-1), handsup)
 	    if handsup then
-	      vRP.playAnim({true,{{"random@mugging3", "handsup_standing_base", 1}},true})
+	      vRP.playAnim(true,{{"random@mugging3", "handsup_standing_base", 1}},true)
 	    else
-	      vRP.stopAnim({true})
+	      vRP.stopAnim(true)
 		  SetPedStealthMovement(GetPlayerPed(-1),false,"") 
 	    end
 	  end -- Comment to allow use in vehicle
@@ -102,40 +114,11 @@ cfg.hotkeys = {
 	  -- Do nothing on release because it's toggle.
 	end,
   },
-  [46] = {
-    -- E call/skip emergency
-    group = 0, 
-	pressed = function() 
-	  if vRP.isInComa({}) then
-	    if called == 0 then 
-	      HKserver.canSkipComa({"coma.skipper","coma.caller"},function(skipper,caller) -- permission to skip when no Doc is online, or just call them when they are. Change them on client.lua too if you do
-		    if skipper or caller then
-		      HKserver.docsOnline({},function(docs)
-		        if docs == 0 and skipper then
-				  vRP.killComa({})
-			    else
-				  called = 30
-				  local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
-				  HKserver.helpComa({x,y,z})
-				  Citizen.Wait(1000)
-			    end
-			  end)
-            end
-		  end)
-		else
-		  vRP.notify({"~r~You already called the ambulance."})
-		end
-	  end
-	end,
-	released = function()
-	  -- Do nothing on release because it's toggle.
-	end,
-  },
   [213] = {
     -- HOME toggle User List
     group = 0, 
 	pressed = function() 
-	  HKserver.openUserList({})
+	  HKserver.openUserList()
 	end,
 	released = function()
 	  -- Do nothing on release because it's toggle.
@@ -199,7 +182,7 @@ cfg.hotkeys = {
 		  vehicle = targetVehicle
 		  plate = GetVehicleNumberPlateText(vehicle)
 		end
-	    HKserver.canUserLockVehicle({plate, vehicle, isPlayerInside})
+	    HKserver.canUserLockVehicle(plate, vehicle, isPlayerInside)
 	  end
 	end,
 	released = function()
@@ -207,3 +190,5 @@ cfg.hotkeys = {
 	end,
   },
 }
+
+return cfg
