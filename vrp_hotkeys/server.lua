@@ -15,17 +15,19 @@ lang = Lang.lang[lcfg.lang]
 -- USE FOR NECESSARY SERVER FUNCTIONS
 
 function vRPhk.toggleHandcuff()
-  local user_id = vRP.getUserId(source)
-  if vRP.hasPermission(user_id,"hotkey.handcuff") then
-    local nplayer = vRPclient.getNearestPlayer(source,10)
-      local nuser_id = vRP.getUserId(nplayer)
-      if nuser_id ~= nil then
+  Citizen.CreateThread(function()
+    local user_id = vRP.getUserId(source)
+	local player = vRP.getUserSource(user_id)
+    if vRP.hasPermission(user_id,"hotkey.handcuff") then
+      local nplayer = vRPclient.getNearestPlayer(player,10)
+	  if nplayer then
         vRPclient.toggleHandcuff(nplayer)
         vRP.closeMenu(nplayer)
       else
-        vRPclient.notify(source,lang.common.no_player_near())
+        vRPclient.notify(player,lang.common.no_player_near())
       end
-  end
+    end
+  end)
 end
 
 function vRPhk.docsOnline()
@@ -33,7 +35,7 @@ function vRPhk.docsOnline()
   return #docs
 end
 
-function vRPhk.canSkipComa(p1,p2)
+function vRPhk.canSkipComa()
   local user_id = vRP.getUserId(source)
   return vRP.hasPermission(user_id,"coma.skipper"), vRP.hasPermission(user_id,"coma.caller")
 end
@@ -111,7 +113,7 @@ function vRPhk.openUserList()
         count = count+1
         local user_source = vRP.getUserSource(k)
         local identity = vRP.getUserIdentity(k)
-		  if user_source ~= nil then
+		  if user_source ~= nil and vRP.getPlayerName(user_source) ~= "unknown" then
             content = content.."<br /><span class=\"id\">"..k.."</span><span class=\"pseudo\">"..vRP.getPlayerName(user_source).."</span>"
             if identity then
               content = content.."<span class=\"name\">"..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).."</span><span class=\"job\">"..vRP.getUserGroupByType(k,"job").."</span>"
