@@ -32,6 +32,19 @@ Citizen.CreateThread(function()
 end)
 
 -- OTHER THREADS
+-- THIS IS FOR KNEEL
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        if IsEntityPlayingAnim(GetPlayerPed(PlayerId()), "random@arrests@busted", "idle_a", 3) then
+            DisableControlAction(1, 140, true)
+            DisableControlAction(1, 141, true)
+            DisableControlAction(1, 142, true)
+            DisableControlAction(0,21,true)
+        end
+    end
+end)
+
 -- THIS IS FOR CROUCH
 Citizen.CreateThread(function()
   while true do 
@@ -212,3 +225,10 @@ function vRPhk.playSoundWithinDistanceOfCoords(x, y, z, maxDistance, soundFile, 
         })
     end
 end
+
+function loadAnimDict( dict )
+    while ( not HasAnimDictLoaded( dict ) ) do
+        RequestAnimDict( dict )
+        Citizen.Wait( 5 )
+    end
+end 

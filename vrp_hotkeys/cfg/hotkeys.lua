@@ -3,6 +3,35 @@
 cfg = {}
 -- Hotkeys Configuration: cfg.hotkeys = {[Key] = {group = 1, pressed = function() end, released = function() end},}
 cfg.hotkeys = {
+  [26] = {
+    -- C toggle Kneel
+    group = 1, 
+    pressed = function() 
+      if not IsPauseMenuActive() and not IsPedInAnyVehicle(GetPlayerPed(-1), true) then -- Comment to allow use in vehicle
+        local player = GetPlayerPed( -1 )
+        if ( DoesEntityExist( player ) and not IsEntityDead( player )) then 
+            loadAnimDict( "random@arrests" )
+            loadAnimDict( "random@arrests@busted" )
+            if ( IsEntityPlayingAnim( player, "random@arrests@busted", "idle_a", 3 ) ) then 
+                TaskPlayAnim( player, "random@arrests@busted", "exit", 8.0, 1.0, -1, 2, 0, 0, 0, 0 )
+                Wait (3000)
+                TaskPlayAnim( player, "random@arrests", "kneeling_arrest_get_up", 8.0, 1.0, -1, 128, 0, 0, 0, 0 )
+            else
+                TaskPlayAnim( player, "random@arrests", "idle_2_hands_up", 8.0, 1.0, -1, 2, 0, 0, 0, 0 )
+                Wait (4000)
+                TaskPlayAnim( player, "random@arrests", "kneeling_arrest_idle", 8.0, 1.0, -1, 2, 0, 0, 0, 0 )
+                Wait (500)
+                TaskPlayAnim( player, "random@arrests@busted", "enter", 8.0, 1.0, -1, 2, 0, 0, 0, 0 )
+                Wait (1000)
+                TaskPlayAnim( player, "random@arrests@busted", "idle_a", 8.0, 1.0, -1, 9, 0, 0, 0, 0 )
+            end     
+        end
+      end -- Comment to allow use in vehicle
+    end,
+    released = function()
+	  -- Do nothing on release because it's toggle.
+    end,
+  },
   [170] = {
     -- F3 toggle Cuff nearest player
     group = 1, 
