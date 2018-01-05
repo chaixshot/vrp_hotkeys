@@ -8,6 +8,10 @@ HKclient = Tunnel.getInterface("vrp_hotkeys","vrp_hotkeys")
 Tunnel.bindInterface("vrp_hotkeys",vRPhk)
 -- USE FOR NECESSARY SERVER FUNCTIONS
 
+local Lang = module("vrp", "lib/Lang")
+local cfg = module("vrp", "cfg/base")
+local lang = Lang.new(module("vrp", "cfg/lang/"..cfg.lang) or {})
+
 function vRPhk.test(msg)
   print("msg "..msg.." received from "..source)
   return 42
